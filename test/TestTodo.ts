@@ -6,7 +6,7 @@ import { setRoute } from 'vada';
 import { allRoute, activeRoute, completedRoute } from '../src/app';
 import { reducer, AppState } from '../src/app';
 import { entryText, createNew, deleteItem } from '../src/app';
-import { toggleCompleted, markAs, markAllAs } from '../src/app';
+import { toggleCompleted, markAs, markAllAs, editItem } from '../src/app';
 
 function addItems(s: AppState, ...desc: string[]): AppState {
     desc.forEach((d: string) => {
@@ -64,7 +64,14 @@ describe("TodoMVC application flow", () => {
             ]);
         });
     });
-    describe("Change completion status", () => {
+    describe("Edit items", () => {
+        it("edit item text", () => {
+            let s = addItems(s0, "Item1", "Item2", "Item3");
+            expect(s.items[1].text).to.be.equal("Item2");
+            let sc = reducer(s, editItem.request({id: 1, t: "Item 7"}));
+            expect(sc.items[1].text).to.be.equal("Item 7");
+        });
+
         it("should toggle the first item twice", () => {
             let s = addItems(s0, "Item1", "Item2", "Item3");
             expect(s.items[1].completed).to.be.equal(false);
@@ -73,7 +80,7 @@ describe("TodoMVC application flow", () => {
             let si = reducer(sc, toggleCompleted.request(1));
             expect(si.items[1].completed).to.be.equal(false);
         });
-
+        
         it("should mark multiple items", () => {
             let s = addItems(s0, "Item1", "Item2", "Item3");
             expect(s.items[0].completed).to.be.equal(false);

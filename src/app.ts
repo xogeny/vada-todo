@@ -83,6 +83,15 @@ export const deleteItem = DefOp("delete", (s: AppState, p: number) => {
     return ret;
 });
 
+export const editItem = DefOp("edit", (s: TodoItem, p: {id: number, t: string}) => {
+    if (p.id!==s.id) return s;
+    return {
+        id: s.id,
+        completed: s.completed,
+        text: p.t,
+    };
+});
+
 export const markAs = DefOp("mark", (s: TodoItem, p: {id: number, as: boolean}) => {
     if (p.id!==s.id) return s;
     return {
@@ -111,7 +120,7 @@ export const toggleCompleted = DefOp("toggle", (s: TodoItem, p: number) => {
 
 // Reducers for nested state components
 const todoReducer = OpReducer({ id: null, completed: false, text: ""},
-                              [markAs, markAllAs, toggleCompleted]);
+                              [editItem, markAs, markAllAs, toggleCompleted]);
 
 const routeReducer = OpReducer(allRoute.apply({}), [setRoute]);
 
