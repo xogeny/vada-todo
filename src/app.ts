@@ -83,7 +83,7 @@ export const deleteItem = DefOp("delete", (s: AppState, p: number) => {
     return ret;
 });
 
-export const clearCompleted = DefOp("clear", (s: AppState, p: number) => {
+export const clearCompleted = DefOp("clear", (s: AppState, p: void) => {
     let ret = clone(s);
     ret.items = [];
     s.items.forEach(i => {
@@ -129,6 +129,40 @@ export const toggleCompleted = DefOp("toggle", (s: TodoItem, p: number) => {
     };
 });
 
+/*
+   == Reactors ==
+*/
+const counter = (cur: AppState, prev: AppState) => {
+    if (!cur || !prev) return cur;
+    if (cur.items===prev.items) return cur;
+    let ret = clone(cur);
+    ret.count = 0;
+    cur.items.forEach(i => {
+        if (!i.completed) {
+            ret.count++;
+        }
+    });
+    return ret;
+};
+
+/*
+   == Filters ==
+*/
+export function filter(route: string, items: TodoItem[]): TodoItem[] {
+    let ret: TodoItem[] = [];
+    items.forEach(i => {
+        if (route==allRoute.id ||
+            (route==activeRoute.id==!i.completed) ||
+            (route==completedRoute.id==i.completed)) {
+            ret.push(i);
+        }
+    });
+    return ret;
+}
+
+/*
+   == Reducers ==
+*/
 // Reducers for nested state components
 const todoReducer = OpReducer({ id: null, completed: false, text: ""},
                               [editItem, markAs, markAllAs, toggleCompleted]);
@@ -144,21 +178,6 @@ const reducer1: redux.Reducer<AppState> = (s = initialState, a) => {
         items: s.items.map((i: TodoItem) => todoReducer(i, a)),
         count: s.count,
     }
-};
-
-const counter = (cur: AppState, prev: AppState) => {
-    if (!cur || !prev) return cur;
-    if (cur.items===prev.items && cur.route===prev.route) return cur;
-    let ret = clone(cur);
-    ret.count = 0;
-    cur.items.forEach(i => {
-        if (cur.route.name===allRoute.id ||
-            (cur.route.name===activeRoute.id && !i.completed) ||
-            (cur.route.name===completedRoute.id && i.completed)) {
-            ret.count++;
-        }
-    });
-    return ret;
 };
 
 // This reducer applies item level mutations

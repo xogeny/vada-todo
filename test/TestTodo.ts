@@ -126,26 +126,26 @@ describe("TodoMVC application flow", () => {
             let s = addItems(s0, "Item1", "Item2", "Item3");
             let s1 = reducer(s, markAs.request({id: 0, as: true}));
             let s2 = reducer(s1, setRoute.request(allRoute.apply(null)));
-            expect(s2.count).to.be.equal(3);
+            expect(s2.count).to.be.equal(2);
         });
 
         it("should count active items", () => {
             let s = addItems(s0, "Item1", "Item2", "Item3");
             let s1 = reducer(s, markAs.request({id: 0, as: true}));
-            expect(s1.count).to.be.equal(3);
+            expect(s1.count).to.be.equal(2);
             let s2 = reducer(s1, setRoute.request(activeRoute.apply(null)));
             expect(s2.count).to.be.equal(2);
-            let s3 = reducer(s, setRoute.request(allRoute.apply(null)));
-            expect(s3.count).to.be.equal(3);
+            let s3 = reducer(s2, setRoute.request(allRoute.apply(null)));
+            expect(s3.count).to.be.equal(2);
         });
 
         it("should count active items", () => {
             let s = addItems(s0, "Item1", "Item2", "Item3");
             let s1 = reducer(s, markAs.request({id: 0, as: true}));
             let s2 = reducer(s1, setRoute.request(completedRoute.apply(null)));
-            expect(s2.count).to.be.equal(1);
+            expect(s2.count).to.be.equal(2);
             let s3 = reducer(s2, setRoute.request(allRoute.apply(null)));
-            expect(s3.count).to.be.equal(3);
+            expect(s3.count).to.be.equal(2);
         });
     });
 });
