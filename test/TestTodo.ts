@@ -2,6 +2,8 @@ import mocha = require("mocha");
 
 import { expect } from 'chai';
 
+import { setRoute } from 'vada';
+import { allRoute, activeRoute, completedRoute } from '../src/app';
 import { reducer, AppState } from '../src/app';
 import { entryText, createNew, deleteItem } from '../src/app';
 import { toggleCompleted, markAs, markAllAs } from '../src/app';
@@ -77,6 +79,7 @@ describe("TodoMVC application flow", () => {
             expect(s.items[0].completed).to.be.equal(false);
             expect(s.items[1].completed).to.be.equal(false);
             expect(s.items[2].completed).to.be.equal(false);
+            expect(s.count).to.be.equal(3);
             
             let s1 = reducer(s, markAs.request({id: 1, as: true}));
             expect(s1.items[0].completed).to.be.equal(false);
@@ -109,6 +112,33 @@ describe("TodoMVC application flow", () => {
             expect(s1.items[0].completed).to.be.equal(true);
             expect(s1.items[1].completed).to.be.equal(true);
             expect(s1.items[2].completed).to.be.equal(true);
+        });
+    });
+    describe("Change routes", () => {
+        it("should count all items", () => {
+            let s = addItems(s0, "Item1", "Item2", "Item3");
+            let s1 = reducer(s, markAs.request({id: 0, as: true}));
+            let s2 = reducer(s1, setRoute.request(allRoute.apply(null)));
+            expect(s2.count).to.be.equal(3);
+        });
+
+        it("should count active items", () => {
+            let s = addItems(s0, "Item1", "Item2", "Item3");
+            let s1 = reducer(s, markAs.request({id: 0, as: true}));
+            expect(s1.count).to.be.equal(3);
+            let s2 = reducer(s1, setRoute.request(activeRoute.apply(null)));
+            expect(s2.count).to.be.equal(2);
+            let s3 = reducer(s, setRoute.request(allRoute.apply(null)));
+            expect(s3.count).to.be.equal(3);
+        });
+
+        it("should count active items", () => {
+            let s = addItems(s0, "Item1", "Item2", "Item3");
+            let s1 = reducer(s, markAs.request({id: 0, as: true}));
+            let s2 = reducer(s1, setRoute.request(completedRoute.apply(null)));
+            expect(s2.count).to.be.equal(1);
+            let s3 = reducer(s2, setRoute.request(allRoute.apply(null)));
+            expect(s3.count).to.be.equal(3);
         });
     });
 });

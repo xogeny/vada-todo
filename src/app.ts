@@ -5,7 +5,7 @@ import { RouteId, RouteState, setRoute } from 'vada';
 // Operation related types
 import { DefOp, Operation, OpReducer } from 'vada';
 // Reducer related functions
-import { combineReducers } from 'vada';
+import { combineReducers, wrapReducer } from 'vada';
 
 /*
    == Routes ==
@@ -126,8 +126,23 @@ const reducer1: redux.Reducer<AppState> = (s = initialState, a) => {
     }
 };
 
+const counter = (cur: AppState, prev: AppState) => {
+    if (!cur || !prev) return cur;
+    if (cur.items===prev.items && cur.route===prev.route) return cur;
+    let ret = clone(cur);
+    ret.count = 0;
+    cur.items.forEach(i => {
+        if (cur.route.name===allRoute.id ||
+            (cur.route.name===activeRoute.id && !i.completed) ||
+            (cur.route.name===completedRoute.id && i.completed)) {
+            ret.count++;
+        }
+    });
+    return ret;
+};
+
 // This reducer applies item level mutations
 const reducer2 = OpReducer(initialState,
                            [entryText, createNew, deleteItem]);
 
-export const reducer = combineReducers(reducer1, reducer2);
+export const reducer = wrapReducer(combineReducers(reducer1, reducer2), [counter]);
