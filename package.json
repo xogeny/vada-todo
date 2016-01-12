@@ -25,7 +25,7 @@
     "dependencies": {
         "react": "^0.14.6",
         "redux": "^3.0.5",
-        "vada": "^0.8.0",
+        "vada": "^0.8.2",
         "vada-browser": "^0.1.0",
         "vada-react": "^0.1.0"
     },

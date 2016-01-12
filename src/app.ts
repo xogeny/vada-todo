@@ -1,7 +1,11 @@
-// Routing related types
-import { RouteId, RouteState } from 'vada';
+import redux = require('redux');
+
+// Routing related types and actions
+import { RouteId, RouteState, setRoute } from 'vada';
 // Operation related types
 import { DefOp, Operation, OpReducer } from 'vada';
+// Reducer related functions
+import { combineReducers } from 'vada';
 
 /*
    == Routes ==
@@ -30,7 +34,7 @@ export interface AppState {
 export const initialState: AppState = {
     next: 0,
     entry: "",
-    route: allRoute.apply(null),
+    route: allRoute.apply({}),
     items: [],
     count: 0,
 }
@@ -48,6 +52,12 @@ export function clone(s: AppState): AppState {
 /*
    == Operations ==
 */
+export const entryText = DefOp("entry", (s: AppState, p: string) => {
+    let ret = clone(s);
+    ret.entry = p;
+    return ret;
+});
+
 export const createNew = DefOp("new", (s: AppState, p: void) => {
     return {
         next: s.next+1,
@@ -62,16 +72,36 @@ export const createNew = DefOp("new", (s: AppState, p: void) => {
     };
 });
 
-export const markCompleted = DefOp("mark", (s: TodoItem, p: number) => {
-    if (p!==s.id) return s;
+export const deleteItem = DefOp("delete", (s: AppState, p: number) => {
+    let ret = clone(s);
+    ret.items = [];
+    s.items.forEach(i => {
+        if (i.id!==p) {
+            ret.items.push(i);
+        }
+    });
+    return ret;
+});
+
+export const markAs = DefOp("mark", (s: TodoItem, p: {id: number, as: boolean}) => {
+    if (p.id!==s.id) return s;
     return {
         id: s.id,
-        completed: true,
+        completed: p.as,
+        text: s.text,
+    };
+});
+
+export const markAllAs = DefOp("markall", (s: TodoItem, p: boolean) => {
+    return {
+        id: s.id,
+        completed: p,
         text: s.text,
     };
 });
 
 export const toggleCompleted = DefOp("toggle", (s: TodoItem, p: number) => {
+    if (p!==s.id) return s;
     return {
         id: s.id,
         completed: !s.completed,
@@ -79,4 +109,25 @@ export const toggleCompleted = DefOp("toggle", (s: TodoItem, p: number) => {
     };
 });
 
-export const reducer = OpReducer(initialState, [createNew]);
+// Reducers for nested state components
+const todoReducer = OpReducer({ id: null, completed: false, text: ""},
+                              [markAs, markAllAs, toggleCompleted]);
+
+const routeReducer = OpReducer(allRoute.apply({}), [setRoute]);
+
+// This reducer applies route and item reducers
+const reducer1: redux.Reducer<AppState> = (s = initialState, a) => {
+    return {
+        next: s.next,
+        entry: s.entry,
+        route: routeReducer(s.route, a),
+        items: s.items.map((i: TodoItem) => todoReducer(i, a)),
+        count: s.count,
+    }
+};
+
+// This reducer applies item level mutations
+const reducer2 = OpReducer(initialState,
+                           [entryText, createNew, deleteItem]);
+
+export const reducer = combineReducers(reducer1, reducer2);
