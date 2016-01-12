@@ -1,5 +1,5 @@
 import redux = require('redux');
-import { AppState, entryText, createNew } from './app';
+import { AppState, entryText, createNew, markAs } from './app';
 
 export function addSampleItems(store: redux.Store<AppState>) {
     store.dispatch(entryText.request("Test Application Logic"));
@@ -8,4 +8,6 @@ export function addSampleItems(store: redux.Store<AppState>) {
     store.dispatch(createNew.request(null));
     store.dispatch(entryText.request("Test UI Actions"));
     store.dispatch(createNew.request(null));
+    store.dispatch(entryText.request("Write Documentation"));
+    store.dispatch(markAs.request({id: 1, as: true}));
 }

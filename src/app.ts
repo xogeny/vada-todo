@@ -83,6 +83,17 @@ export const deleteItem = DefOp("delete", (s: AppState, p: number) => {
     return ret;
 });
 
+export const clearCompleted = DefOp("clear", (s: AppState, p: number) => {
+    let ret = clone(s);
+    ret.items = [];
+    s.items.forEach(i => {
+        if (!i.completed) {
+            ret.items.push(i);
+        }
+    });
+    return ret;
+});
+
 export const editItem = DefOp("edit", (s: TodoItem, p: {id: number, t: string}) => {
     if (p.id!==s.id) return s;
     return {
@@ -152,6 +163,6 @@ const counter = (cur: AppState, prev: AppState) => {
 
 // This reducer applies item level mutations
 const reducer2 = OpReducer(initialState,
-                           [entryText, createNew, deleteItem]);
+                           [entryText, createNew, deleteItem, clearCompleted]);
 
 export const reducer = wrapReducer(combineReducers(reducer1, reducer2), [counter]);
