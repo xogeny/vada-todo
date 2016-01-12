@@ -1,0 +1,38 @@
+{
+    "name": "vada-todo",
+    "version": "1.0.0",
+    "description": "A TodoMVC implementation using TypeScript+Vada+React",
+    "main": "js/src/index.js",
+    "typings": "js/src/index.d.ts",
+    "scripts": {
+        "test": "mocha"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/xogeny/vada-todo.git"
+    },
+    "keywords": [
+        "todomvc",
+        "typescript",
+        "vada"
+    ],
+    "author": "Michael M. Tiller",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/xogeny/vada-todo/issues"
+    },
+    "homepage": "https://github.com/xogeny/vada-todo#readme",
+    "dependencies": {
+        "react": "^0.14.6",
+        "redux": "^3.0.5",
+        "vada": "^0.8.0",
+        "vada-browser": "^0.1.0",
+        "vada-react": "^0.1.0"
+    },
+    "devDependencies": {
+        "chai": "^3.4.1",
+        "mocha": "^2.3.4",
+        "ts-node": "^0.5.5",
+        "typescript": "^1.7.5"
+    }
+}
