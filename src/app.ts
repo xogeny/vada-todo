@@ -6,6 +6,8 @@ import { RouteId, RouteState, setRoute } from 'vada';
 import { DefOp, Operation, OpReducer } from 'vada';
 // Reducer related functions
 import { combineReducers, wrapReducer } from 'vada';
+// Memoization
+import { multiMemo } from 'vada';
 
 /*
    == Routes ==
@@ -159,6 +161,9 @@ export function filter(route: string, items: TodoItem[]): TodoItem[] {
     });
     return ret;
 }
+
+export const memoFilter =
+    multiMemo((s: {route: string, items: TodoItem[]}) => filter(s.route, s.items));
 
 /*
    == Reducers ==

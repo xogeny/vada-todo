@@ -131,7 +131,8 @@ interface AppProps extends React.Props<App> {
 
 class App extends React.Component<AppProps, void> {
     render() {
-        let items = app.filter(this.props.state.route.name, this.props.state.items);
+        let items = app.memoFilter({route: this.props.state.route.name,
+                                    items: this.props.state.items});
         let todos = items.map(item => (
             <TodoItem {...item} dispatcher={this.props.dispatcher}
                                 key={item.id}/>));
