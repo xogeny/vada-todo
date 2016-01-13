@@ -52,23 +52,22 @@ class TodoItem extends React.Component<TodoProps, TodoState> {
             editing: this.state.editing,
             completed: this.props.completed
         };
-        let dispatcher = this.props.dispatcher;
+        let { dispatcher, id } = this.props;
         return <li className={classnames(cm)}>
             <div className="view">
                 <input className="toggle" type="checkbox"
                        checked={this.props.completed}
-                       onChange={e => dispatcher.toggleCompleted(this.props.id)}/>
+                       onChange={e => dispatcher.toggleCompleted(id)}/>
                 <label onDoubleClick={e => this.setState({editing: true})}>
                     {this.props.text}
                 </label>
                 <button className="destroy"
-                        onClick={e => dispatcher.deleteItem(this.props.id)}>
+                        onClick={e => dispatcher.deleteItem(id)}>
                 </button>
             </div>
             <input className="edit" value={this.props.text}
                    onKeyDown={e => this.endEditing(e)}
-                   onChange={e => dispatcher.editItem(this.props.id,
-                                                      e.target["value"])}/>
+                   onChange={e => dispatcher.editItem(id, e)}/>
         </li>;
     };
 };
@@ -163,8 +162,8 @@ class Dispatcher {
     clearCompleted() {
         this.store.dispatch(app.clearCompleted.request(null));
     }
-    editItem(id: number, t: string) {
-        this.store.dispatch(app.editItem.request({id: id, t: t}));
+    editItem(id: number, e: React.FormEvent) {
+        this.store.dispatch(app.editItem.request({id: id, t: e["value"]}));
     }
     markAs(id: number, as: boolean) {
         this.store.dispatch(app.markAs.request({id: id, as: as}));
