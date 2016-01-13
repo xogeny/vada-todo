@@ -18,19 +18,15 @@ const ENTER_KEY = 13;
     
 class Header extends React.Component<HeaderProps, void> {
     newItem(e: React.KeyboardEvent) {
-        if (e.keyCode === ENTER_KEY && this.props.text.trim()!=="") {
-            this.props.dispatcher.createNew();
-        }
-    }
-    changeText(e: React.FormEvent) {
-        this.props.dispatcher.entryText(e.target["value"]);
+        if (e.keyCode !== ENTER_KEY || this.props.text.trim()==="") return;
+        this.props.dispatcher.createNew();
     }
     render() {
         return (<div>
             <h1>todos</h1>
             <input className="new-todo" placeholder="What needs to be done?"
                    value={this.props.text} onKeyDown={e => this.newItem(e)}
-                   onChange={e => this.changeText(e) }/>
+                   onChange={e => this.props.dispatcher.entryText(e) }/>
         </div>);
     };
 };
@@ -45,46 +41,34 @@ interface TodoState {
 class TodoItem extends React.Component<TodoProps, TodoState> {
     constructor(props?: TodoProps) {
         super(props);
-        this.state = {
-            editing: false
-        };
-    }
-    changeText(e: React.FormEvent) {
-        this.props.dispatcher.editItem(this.props.id, e.target["value"]);
-    }
-    toggle() {
-        this.props.dispatcher.toggleCompleted(this.props.id);
-    }
-    deleteMe(e: React.MouseEvent) {
-        this.props.dispatcher.deleteItem(this.props.id);
-    }
-    startEditing(e: React.MouseEvent) {
-        this.setState({editing: true});
+        this.state = { editing: false };
     }
     endEditing(e: React.KeyboardEvent) {
-        if (e.keyCode === ENTER_KEY) {
-            this.setState({editing: false});
-        }
+        if (e.keyCode !== ENTER_KEY) return;
+        this.setState({editing: false});
     }
     render() {
         let cm: ClassMap = {
             editing: this.state.editing,
             completed: this.props.completed
         };
+        let dispatcher = this.props.dispatcher;
         return <li className={classnames(cm)}>
             <div className="view">
                 <input className="toggle" type="checkbox"
                        checked={this.props.completed}
-                       onChange={e => this.toggle()}/>
-                <label onDoubleClick={e => this.startEditing(e)}>
+                       onChange={e => dispatcher.toggleCompleted(this.props.id)}/>
+                <label onDoubleClick={e => this.setState({editing: true})}>
                     {this.props.text}
                 </label>
-                <button className="destroy" onClick={e => this.deleteMe(e)}>
+                <button className="destroy"
+                        onClick={e => dispatcher.deleteItem(this.props.id)}>
                 </button>
             </div>
             <input className="edit" value={this.props.text}
                    onKeyDown={e => this.endEditing(e)}
-                   onChange={e => this.changeText(e)}/>
+                   onChange={e => dispatcher.editItem(this.props.id,
+                                                      e.target["value"])}/>
         </li>;
     };
 };
@@ -169,8 +153,8 @@ class Dispatcher {
             this.all.goto(null);
         }));
     }
-    entryText(s: string) {
-        this.store.dispatch(app.entryText.request(s));
+    entryText(e: React.FormEvent) {
+        this.store.dispatch(app.entryText.request(e.target["value"]));
     }
     createNew() { this.store.dispatch(app.createNew.request(null)); }
     deleteItem(id: number) {
