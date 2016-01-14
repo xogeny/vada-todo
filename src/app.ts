@@ -30,7 +30,7 @@ export interface AppState {
     entry: string;
     route: RouteState;
     items: TodoItem[];
-    count: number;
+    active: number;
 }
 
 export const initialState: AppState = {
@@ -38,7 +38,7 @@ export const initialState: AppState = {
     entry: "",
     route: allRoute.apply({}),
     items: [],
-    count: 0,
+    active: 0,
 }
 
 export function clone(s: AppState): AppState {
@@ -47,7 +47,7 @@ export function clone(s: AppState): AppState {
         entry: s.entry,
         route: s.route,
         items: s.items,
-        count: s.count,
+        active: s.active,
     }
 }
 
@@ -70,7 +70,7 @@ export const createNew = DefOp("new", (s: AppState, p: void) => {
             completed: false,
             text: s.entry.trim(),
         }, ...s.items],
-        count: s.count,
+        active: s.active,
     };
 });
 
@@ -134,14 +134,14 @@ export const toggleCompleted = DefOp("toggle", (s: TodoItem, p: number) => {
 /*
    == Reactors ==
 */
-const counter = (cur: AppState, prev: AppState) => {
+const countActive = (prev: AppState, cur: AppState) => {
     if (!cur || !prev) return cur;
     if (cur.items===prev.items) return cur;
     let ret = clone(cur);
-    ret.count = 0;
+    ret.active = 0;
     cur.items.forEach(i => {
         if (!i.completed) {
-            ret.count++;
+            ret.active++;
         }
     });
     return ret;
@@ -181,7 +181,7 @@ const reducer1: redux.Reducer<AppState> = (s = initialState, a) => {
         entry: s.entry,
         route: routeReducer(s.route, a),
         items: s.items.map((i: TodoItem) => todoReducer(i, a)),
-        count: s.count,
+        active: s.active,
     }
 };
 
@@ -189,4 +189,5 @@ const reducer1: redux.Reducer<AppState> = (s = initialState, a) => {
 const reducer2 = OpReducer(initialState,
                            [entryText, createNew, deleteItem, clearCompleted]);
 
-export const reducer = wrapReducer(combineReducers(reducer1, reducer2), [counter]);
+export const reducer = wrapReducer(combineReducers(reducer1, reducer2),
+                                   [countActive]);

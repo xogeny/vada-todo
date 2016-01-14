@@ -4,7 +4,7 @@ import ReactDOM = require('react-dom');
 import { createStore } from 'redux';
 
 import app = require('./app');
-import { routingCallback } from 'vada';
+import { routingCallback, RouteId } from 'vada';
 import { bindClass, classnames, ClassMap } from 'vada-react';
 import { addSampleItems } from './utils';
 import { bindRoute, RouteRequest, initializeRouting } from 'vada-browser';
@@ -75,28 +75,25 @@ class TodoItem extends React.Component<TodoProps, TodoState> {
 interface FooterProps extends React.Props<Footer> {
     dispatcher: Dispatcher;
     completed: number;
-    left: number;
+    active: number;
     route: string;
 };
 
 class Footer extends React.Component<FooterProps, void> {
     render() {
-        let allClass = this.props.route==app.allRoute.id ? "selected" : null;
-        let actClass = this.props.route==app.activeRoute.id ? "selected" : null;
-        let compClass = this.props.route==app.completedRoute.id ? "selected" : null;
+        let cl = (a: RouteId<any>) => (this.props.route==a.id ? "selected": "");
         return <footer className="footer">
             <span className="todo-count">
-                <strong>{this.props.left}</strong>
-                <span>&nbsp;</span>
-                <span>{this.props.left==1 ? "item" : "items"} left</span>
+                <strong>{this.props.active}&nbsp;</strong>
+                <span>{this.props.active==1 ? "item" : "items"} left</span>
             </span>
             <ul className="filters">
                 <li><a href={this.props.dispatcher.all.href(null)}
-                       className={allClass}>All</a></li>
+                       className={cl(app.allRoute)}>All</a></li>
                 <li><a href={this.props.dispatcher.active.href(null)}
-                       className={actClass}>Active</a></li>
+                       className={cl(app.activeRoute)}>Active</a></li>
                 <li><a href={this.props.dispatcher.completed.href(null)}
-                       className={compClass}>Completed</a></li>
+                       className={cl(app.completedRoute)}>Completed</a></li>
             </ul>
             {this.props.completed===0 ? null : 
              <button className="clear-completed"
@@ -114,27 +111,25 @@ interface AppProps extends React.Props<App> {
 
 class App extends React.Component<AppProps, void> {
     render() {
+        let dispatcher = this.props.dispatcher;
         let items = app.memoFilter({route: this.props.state.route.name,
                                     items: this.props.state.items});
         let todos = items.map(item => (
-            <TodoItem {...item} dispatcher={this.props.dispatcher}
-                                key={item.id}/>));
-        let completed = this.props.state.items.length-this.props.state.count;
-        let toggleDone = this.props.state.count===0;
+            <TodoItem {...item} dispatcher={dispatcher} key={item.id}/>));
+        let completed = this.props.state.items.length-this.props.state.active;
+        let toggleDone = this.props.state.active===0;
         return <div>
-                <Header text={this.props.state.entry}
-                        dispatcher={this.props.dispatcher}/>
+                <Header text={this.props.state.entry} dispatcher={dispatcher}/>
                 <section className="main">
                     <input className="toggle-all" type="checkbox"
-                           onClick={e => this.props.dispatcher.markAllAs(!toggleDone)}
+                           onClick={e => dispatcher.markAllAs(!toggleDone)}
                            checked={toggleDone}/>
                     <ul className="todo-list">
                         {todos}
                     </ul>
                 </section>
-                <Footer left={this.props.state.count}
-                        completed={completed}
-                        dispatcher={this.props.dispatcher}
+                <Footer active={this.props.state.active}
+                        completed={completed} dispatcher={dispatcher}
                         route={this.props.state.route.name}/>
         </div>;
     }
