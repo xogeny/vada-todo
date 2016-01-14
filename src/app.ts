@@ -3,11 +3,11 @@ import redux = require('redux');
 // Routing related types and actions
 import { RouteId, RouteState, setRoute } from 'vada';
 // Operation related types
-import { DefOp, Operation, OpReducer } from 'vada';
+import { DefOp, Operation, createOpReducer } from 'vada';
 // Reducer related functions
 import { combineReducers, wrapReducer } from 'vada';
 // Memoization
-import { multiMemo } from 'vada';
+import { multiMemo, Builder } from 'vada';
 
 /*
    == Routes ==
@@ -107,11 +107,12 @@ export const editItem = DefOp("edit", (s: TodoItem, p: {id: number, t: string}) 
 
 export const markAs = DefOp("mark", (s: TodoItem, p: {id: number, as: boolean}) => {
     if (p.id!==s.id) return s;
-    return {
+    let ret = {
         id: s.id,
         completed: p.as,
         text: s.text,
     };
+    return ret;
 });
 
 export const markAllAs = DefOp("markall", (s: TodoItem, p: boolean) => {
@@ -168,26 +169,15 @@ export const memoFilter =
 /*
    == Reducers ==
 */
-// Reducers for nested state components
-const todoReducer = OpReducer({ id: null, completed: false, text: ""},
-                              [editItem, markAs, markAllAs, toggleCompleted]);
+let r = new Builder<AppState>(
+    // Global actions
+    [entryText, createNew, deleteItem, clearCompleted], initialState)
+    // Actions to apply to items
+    .overlay((s, r, a) => { s.items = s.items.map((i: TodoItem) => r(i, a)); },
+             [editItem, markAs, markAllAs, toggleCompleted])
+    // Actions to apply to the route
+    .overlay((s, r, a) => { s.route = r(s.route, a) }, [setRoute])
+    // Perform count
+    .reactTo(countActive);
 
-const routeReducer = OpReducer(allRoute.apply({}), [setRoute]);
-
-// This reducer applies route and item reducers
-const reducer1: redux.Reducer<AppState> = (s = initialState, a) => {
-    return {
-        next: s.next,
-        entry: s.entry,
-        route: routeReducer(s.route, a),
-        items: s.items.map((i: TodoItem) => todoReducer(i, a)),
-        active: s.active,
-    }
-};
-
-// This reducer applies item level mutations
-const reducer2 = OpReducer(initialState,
-                           [entryText, createNew, deleteItem, clearCompleted]);
-
-export const reducer = wrapReducer(combineReducers(reducer1, reducer2),
-                                   [countActive]);
+export const reducer = r.reducer();
