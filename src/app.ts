@@ -1,7 +1,7 @@
 import redux = require('redux');
 
 // Routing related types and actions
-import { RouteId, RouteState, setRoute } from 'vada';
+import { RouteId, RouteState, setRoute, clone, overlay, overlayIf } from 'vada';
 // Operation related types
 import { DefOp, Operation, createOpReducer } from 'vada';
 // Reducer related functions
@@ -41,23 +41,11 @@ export const initialState: AppState = {
     active: 0,
 }
 
-export function clone(s: AppState): AppState {
-    return {
-        next: s.next,
-        entry: s.entry,
-        route: s.route,
-        items: s.items,
-        active: s.active,
-    }
-}
-
 /*
    == Operations ==
 */
 export const entryText = DefOp("entry", (s: AppState, p: string) => {
-    let ret = clone(s);
-    ret.entry = p;
-    return ret;
+    return overlay(s, s => s.entry = p);
 });
 
 export const createNew = DefOp("new", (s: AppState, p: void) => {
@@ -97,39 +85,19 @@ export const clearCompleted = DefOp("clear", (s: AppState, p: void) => {
 });
 
 export const editItem = DefOp("edit", (s: TodoItem, p: {id: number, t: string}) => {
-    if (p.id!==s.id) return s;
-    return {
-        id: s.id,
-        completed: s.completed,
-        text: p.t,
-    };
+    return overlayIf(s, p.id===s.id, s => s.text = p.t);
 });
 
 export const markAs = DefOp("mark", (s: TodoItem, p: {id: number, as: boolean}) => {
-    if (p.id!==s.id) return s;
-    let ret = {
-        id: s.id,
-        completed: p.as,
-        text: s.text,
-    };
-    return ret;
+    return overlayIf(s, p.id===s.id, s => s.completed = p.as);
 });
 
 export const markAllAs = DefOp("markall", (s: TodoItem, p: boolean) => {
-    return {
-        id: s.id,
-        completed: p,
-        text: s.text,
-    };
+    return overlay(s, s => s.completed = p);
 });
 
 export const toggleCompleted = DefOp("toggle", (s: TodoItem, p: number) => {
-    if (p!==s.id) return s;
-    return {
-        id: s.id,
-        completed: !s.completed,
-        text: s.text,
-    };
+    return overlayIf(s, p===s.id, s => s.completed = !s.completed);
 });
 
 /*
@@ -173,10 +141,10 @@ let r = new Builder<AppState>(
     // Global actions
     [entryText, createNew, deleteItem, clearCompleted], initialState)
     // Actions to apply to items
-    .overlay((s, r, a) => { s.items = s.items.map((i: TodoItem) => r(i, a)); },
+    .overlayOps((s, r, a) => { s.items = s.items.map((i: TodoItem) => r(i, a)); },
              [editItem, markAs, markAllAs, toggleCompleted])
     // Actions to apply to the route
-    .overlay((s, r, a) => { s.route = r(s.route, a) }, [setRoute])
+    .overlayOps((s, r, a) => { s.route = r(s.route, a) }, [setRoute])
     // Perform count
     .reactTo(countActive);
 
