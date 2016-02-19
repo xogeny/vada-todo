@@ -1,6 +1,6 @@
 # TodoMVC
 
-[![Build Status](https://travis-ci.org/xogeny/vada.png)](https://travis-ci.org/xogeny/vada)
+[![Build Status](https://travis-ci.org/xogeny/vada-todo.png)](https://travis-ci.org/xogeny/vada-todo)
 
 This is an implementation of TodoMVC that uses React, TypeScript,
 Redux and a module I developed called
