@@ -5,9 +5,10 @@ import { createStore } from 'redux';
 
 import app = require('./app');
 import { routingCallback, RouteId } from 'vada';
-import { bindClass, classnames, ClassMap } from 'vada-react';
 import { addSampleItems } from './utils';
-import { bindRoute, RouteRequest, initializeRouting } from 'vada-browser';
+
+import { bindClass, classnames, ClassMap } from 'vada/lib/src/react';
+import { bindRoute, RouteRequest, initializeRouting } from 'vada/lib/src/browser';
 
 interface HeaderProps extends React.Props<Header> {
     dispatcher: Dispatcher;
