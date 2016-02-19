@@ -148,4 +148,4 @@ let r = new Builder<AppState>(
     // Perform count
     .reactTo(countActive);
 
-export const reducer = r.reducer();
+export const reducer: redux.Reducer<AppState> = r.reducer();
