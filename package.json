@@ -1,6 +1,6 @@
 {
   "name": "vada-todo",
-  "version": "0.11.0",
+  "version": "0.13.0",
   "description": "A TodoMVC implementation using TypeScript+Vada+React",
   "main": "js/src/index.js",
   "typings": "js/src/index.d.ts",
