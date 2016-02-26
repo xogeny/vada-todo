@@ -8,12 +8,7 @@ import 'reflect-metadata';
 import app = require('./app');
 
 // These are required to launch the Angular2 version
-import { bootstrap }    from 'angular2/platform/browser'
-import { AppComponent } from './ang';
-
-export function bootstrapAngular() {
-    bootstrap(AppComponent);
-}
+export { bootstrapAngular } from './ang';
 
 // This is required to launch the React version
 import view = require('./view');
