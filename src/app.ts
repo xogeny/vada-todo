@@ -1,7 +1,10 @@
 import redux = require('redux');
 
 // Routing related types and actions
-import { RouteId, RouteState, setRoute, clone, overlay, overlayIf } from 'vada';
+import { RouteId, routingCallback, RouteState, setRoute,
+         clone, overlay, overlayIf } from 'vada';
+// Interacting with the browser
+import { bindRoute, RouteRequest, initializeRouting } from 'vada/lib/src/browser';
 // Operation related types
 import { DefOp, Operation, createOpReducer } from 'vada';
 // Reducer related functions
@@ -149,3 +152,43 @@ let r = new Builder<AppState>(
     .reactTo(countActive);
 
 export const reducer: redux.Reducer<AppState> = r.reducer();
+
+/* 
+   == Action Provider ==
+*/
+
+export class ActionProvider {
+    all: RouteRequest<{}>;
+    active: RouteRequest<{}>;
+    completed: RouteRequest<{}>;
+    constructor(public store: redux.Store<AppState>) {
+        this.all = bindRoute(allRoute, "/");
+        this.active = bindRoute(activeRoute, "/active");
+        this.completed = bindRoute(completedRoute, "/completed");
+        initializeRouting(routingCallback(store, () => {
+            this.all.goto(null);
+        }));
+    }
+    entryText(t: string) {
+        this.store.dispatch(entryText.request(t));
+    }
+    createNew() { this.store.dispatch(createNew.request(null)); }
+    deleteItem(id: number) {
+        this.store.dispatch(deleteItem.request(id));
+    }
+    clearCompleted() {
+        this.store.dispatch(clearCompleted.request(null));
+    }
+    editItem(id: number, t: string) {
+        this.store.dispatch(editItem.request({id: id, t: t}));
+    }
+    markAs(id: number, as: boolean) {
+        this.store.dispatch(markAs.request({id: id, as: as}));
+    }
+    markAllAs(as: boolean) {
+        this.store.dispatch(markAllAs.request(as));
+    }
+    toggleCompleted(id: number) {
+        this.store.dispatch(toggleCompleted.request(id));
+    }
+}

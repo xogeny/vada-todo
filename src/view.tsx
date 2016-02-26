@@ -11,7 +11,7 @@ import { bindClass, classnames, ClassMap } from 'vada/lib/src/react';
 import { bindRoute, RouteRequest, initializeRouting } from 'vada/lib/src/browser';
 
 interface HeaderProps extends React.Props<Header> {
-    dispatcher: Dispatcher;
+    actions: app.ActionProvider;
     text: string;
 };
 
@@ -20,20 +20,20 @@ const ENTER_KEY = 13;
 class Header extends React.Component<HeaderProps, void> {
     newItem(e: React.KeyboardEvent) {
         if (e.keyCode !== ENTER_KEY || this.props.text.trim()==="") return;
-        this.props.dispatcher.createNew();
+        this.props.actions.createNew();
     }
     render() {
         return (<div>
             <h1>todos</h1>
             <input className="new-todo" placeholder="What needs to be done?"
                    value={this.props.text} onKeyDown={e => this.newItem(e)}
-                   onChange={e => this.props.dispatcher.entryText(e) }/>
+                   onChange={e => this.props.actions.entryText(e.target["value"]) }/>
         </div>);
     };
 };
 
 interface TodoProps extends app.TodoItem, React.Props<TodoItem> {
-    dispatcher: Dispatcher;
+    actions: app.ActionProvider;
 }
 
 interface TodoState {
@@ -53,28 +53,28 @@ class TodoItem extends React.Component<TodoProps, TodoState> {
             editing: this.state.editing,
             completed: this.props.completed
         };
-        let { dispatcher, id } = this.props;
+        let { actions, id } = this.props;
         return <li className={classnames(cm)}>
             <div className="view">
                 <input className="toggle" type="checkbox"
                        checked={this.props.completed}
-                       onChange={e => dispatcher.toggleCompleted(id)}/>
+                       onChange={e => actions.toggleCompleted(id)}/>
                 <label onDoubleClick={e => this.setState({editing: true})}>
                     {this.props.text}
                 </label>
                 <button className="destroy"
-                        onClick={e => dispatcher.deleteItem(id)}>
+                        onClick={e => actions.deleteItem(id)}>
                 </button>
             </div>
             <input className="edit" value={this.props.text}
                    onKeyDown={e => this.endEditing(e)}
-                   onChange={e => dispatcher.editItem(id, e)}/>
+                   onChange={e => actions.editItem(id, e["value"])}/>
         </li>;
     };
 };
 
 interface FooterProps extends React.Props<Footer> {
-    dispatcher: Dispatcher;
+    actions: app.ActionProvider;
     completed: number;
     active: number;
     route: string;
@@ -89,16 +89,16 @@ class Footer extends React.Component<FooterProps, void> {
                 <span>{this.props.active==1 ? "item" : "items"} left</span>
             </span>
             <ul className="filters">
-                <li><a href={this.props.dispatcher.all.href(null)}
+                <li><a href={this.props.actions.all.href(null)}
                        className={cl(app.allRoute)}>All</a></li>
-                <li><a href={this.props.dispatcher.active.href(null)}
+                <li><a href={this.props.actions.active.href(null)}
                        className={cl(app.activeRoute)}>Active</a></li>
-                <li><a href={this.props.dispatcher.completed.href(null)}
+                <li><a href={this.props.actions.completed.href(null)}
                        className={cl(app.completedRoute)}>Completed</a></li>
             </ul>
             {this.props.completed===0 ? null : 
              <button className="clear-completed"
-             onClick={e => this.props.dispatcher.clearCompleted() }>
+             onClick={e => this.props.actions.clearCompleted() }>
                 Clear completed
             </button>}
         </footer>;
@@ -107,79 +107,43 @@ class Footer extends React.Component<FooterProps, void> {
 
 interface AppProps extends React.Props<App> {
     state: app.AppState;
-    dispatcher: Dispatcher;
+    actions: app.ActionProvider;
 }
 
 class App extends React.Component<AppProps, void> {
     render() {
-        let dispatcher = this.props.dispatcher;
+        let actions = this.props.actions;
         let items = app.memoFilter({route: this.props.state.route.name,
                                     items: this.props.state.items});
         let todos = items.map(item => (
-            <TodoItem {...item} dispatcher={dispatcher} key={item.id}/>));
+            <TodoItem {...item} actions={actions} key={item.id}/>));
         let completed = this.props.state.items.length-this.props.state.active;
         let toggleDone = this.props.state.active===0;
         return <div>
-                <Header text={this.props.state.entry} dispatcher={dispatcher}/>
+                <Header text={this.props.state.entry} actions={actions}/>
                 <section className="main">
                     <input className="toggle-all" type="checkbox"
-                           onClick={e => dispatcher.markAllAs(!toggleDone)}
+                           onClick={e => actions.markAllAs(!toggleDone)}
                            checked={toggleDone}/>
                     <ul className="todo-list">
                         {todos}
                     </ul>
                 </section>
                 <Footer active={this.props.state.active}
-                        completed={completed} dispatcher={dispatcher}
+                        completed={completed} actions={actions}
                         route={this.props.state.route.name}/>
         </div>;
     }
 }
 
-class Dispatcher {
-    all: RouteRequest<{}>;
-    active: RouteRequest<{}>;
-    completed: RouteRequest<{}>;
-    constructor(public store: redux.Store<app.AppState>) {
-        this.all = bindRoute(app.allRoute, "/");
-        this.active = bindRoute(app.activeRoute, "/active");
-        this.completed = bindRoute(app.completedRoute, "/completed");
-        initializeRouting(routingCallback(store, () => {
-            this.all.goto(null);
-        }));
-    }
-    entryText(e: React.FormEvent) {
-        this.store.dispatch(app.entryText.request(e.target["value"]));
-    }
-    createNew() { this.store.dispatch(app.createNew.request(null)); }
-    deleteItem(id: number) {
-        this.store.dispatch(app.deleteItem.request(id));
-    }
-    clearCompleted() {
-        this.store.dispatch(app.clearCompleted.request(null));
-    }
-    editItem(id: number, e: React.FormEvent) {
-        this.store.dispatch(app.editItem.request({id: id, t: e["value"]}));
-    }
-    markAs(id: number, as: boolean) {
-        this.store.dispatch(app.markAs.request({id: id, as: as}));
-    }
-    markAllAs(as: boolean) {
-        this.store.dispatch(app.markAllAs.request(as));
-    }
-    toggleCompleted(id: number) {
-        this.store.dispatch(app.toggleCompleted.request(id));
-    }
-}
-
 export function render(elem: Element) {
     let store = createStore(app.reducer);
-    let dispatcher = new Dispatcher(store);
+    let actions = new app.ActionProvider(store);
     addSampleItems(store);
     let Root = bindClass(store, App, (s: app.AppState) => {
         return {
             state: s,
-            dispatcher: dispatcher,
+            actions: actions,
         };
     });
     ReactDOM.render(<Root/>, elem);
