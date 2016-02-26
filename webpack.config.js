@@ -8,6 +8,8 @@ module.exports = {
 	extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js'],
     },
     output: {
+        libraryTarget: "var",
+        library: "VadaTodo",
         path: path.join(__dirname, 'dist'),
         publicPath: "/dist/",
         filename: "./bundle.js"
