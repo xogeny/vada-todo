@@ -12,19 +12,15 @@ import app = require('./app');
 <div>
   <h1>todos</h1>
   <input #todotext class="new-todo" placeholder="What needs to be done?"
-         [value]=text (keyup)="handleKey($event, todotext.value)">
+         [(ngModel)]=value (ngModelChange)="actions.entryText(todotext.value)"
+         (keyup.enter)="actions.createNew(); value=''">
 </div>`,
-})
-class Header {
+}) class Header implements OnInit {
+    value: string;
     @Input() text: string;
     @Input() actions: app.ActionProvider;
-    handleKey(e: KeyboardEvent, text: string) {
-        if (text.trim()==="") return;
-        if (e.which !== ENTER_KEY) {
-            this.actions.entryText(text)
-        } else {
-            this.actions.createNew();
-        }
+    ngOnInit() {
+        this.value = this.text;
     }
 }
 
@@ -40,7 +36,8 @@ class Header {
      </button>
   </div>
   <input #edittext class="edit" [(ngModel)]="text"
-         (keyup)="handleKey($event, edittext.value)">
+         (ngModelChange)="actions.editItem(item.id, text)"
+         (keyup.enter)="editing=false">
 </li>
 `,
 }) class TodoItem implements OnInit {
@@ -48,14 +45,6 @@ class Header {
     public text: string;
     @Input() public item: app.TodoItem;
     @Input() public actions: app.ActionProvider;
-    handleKey(e: KeyboardEvent, text: string) {
-        if (text.trim()==="") return;
-        if (e.which !== ENTER_KEY) {
-            this.actions.editItem(this.item.id, text);
-            return;
-        }
-        this.editing = false;
-    }
     ngOnInit() {
         this.text = this.item.text;
     }
@@ -117,14 +106,11 @@ class Footer {
 class AppComponent {
     public state: app.AppState;
     public items: app.TodoItem[];
-    // TODO: The itemid avoids re-instantiating TodoItems when they are updated.
-    // However, the cursor position still gets reset to the end when
-    // ever an update occurs ?!?
     public itemid(index: number, item: app.TodoItem) { return item.id; }
     constructor(@Inject('Actions') private actions: app.ActionProvider, ref: ChangeDetectorRef) {
         this.state = this.actions.store.getState();
         this.items = app.memoFilter({route: this.state.route.name,
-                                    items: this.state.items});
+                                     items: this.state.items});
         this.actions.store.subscribe(() => {
             this.state = this.actions.store.getState();
             this.items = app.memoFilter({route: this.state.route.name,
