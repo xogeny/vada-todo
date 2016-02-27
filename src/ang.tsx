@@ -1,4 +1,5 @@
-import { Component, provide, Inject, Input, ChangeDetectorRef } from 'angular2/core';
+import { Component, provide, Inject, Input, OnInit,
+         ChangeDetectorRef } from 'angular2/core';
 import { bootstrap } from 'angular2/platform/browser';
 import { createStore } from 'redux';
 import { ENTER_KEY, addSampleItems } from './utils';
@@ -38,12 +39,13 @@ class Header {
      <button class="destroy" (click)="actions.deleteItem(item.id)">
      </button>
   </div>
-  <input #edittext class="edit" [value]="item.text"
+  <input #edittext class="edit" [(ngModel)]="text"
          (keyup)="handleKey($event, edittext.value)">
 </li>
 `,
-}) class TodoItem {
+}) class TodoItem implements OnInit {
     public editing: boolean = false;
+    public text: string;
     @Input() public item: app.TodoItem;
     @Input() public actions: app.ActionProvider;
     handleKey(e: KeyboardEvent, text: string) {
@@ -53,6 +55,9 @@ class Header {
             return;
         }
         this.editing = false;
+    }
+    ngOnInit() {
+        this.text = this.item.text;
     }
 }
 
