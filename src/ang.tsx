@@ -19,12 +19,12 @@ class Header {
     @Input() text: string;
     @Input() actions: app.ActionProvider;
     handleKey(e: KeyboardEvent, text: string) {
+        if (text.trim()==="") return;
         if (e.which !== ENTER_KEY) {
             this.actions.entryText(text)
-            return
+        } else {
+            this.actions.createNew();
         }
-        if (text.trim()==="") return;
-        this.actions.createNew();
     }
 }
 
@@ -117,7 +117,7 @@ class Footer {
 class AppComponent {
     public state: app.AppState;
     public items: app.TodoItem[];
-    // TODO: This avoids re-instantiating TodoItems when they are updated.
+    // TODO: The itemid avoids re-instantiating TodoItems when they are updated.
     // However, the cursor position still gets reset to the end when
     // ever an update occurs ?!?
     public itemid(index: number, item: app.TodoItem) { return item.id; }
