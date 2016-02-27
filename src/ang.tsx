@@ -98,7 +98,7 @@ class Footer {
   <section class="main">
     <input class="toggle-all" type="checkbox">
     <ul class="todo-list">
-      <TodoItem *ngFor="#item of state.items; #i = index; trackBy: itemid"
+      <TodoItem *ngFor="#item of items; #i = index; trackBy: itemid"
                 [item]="item" [actions]="actions">
       </TodoItem>
     </ul>
@@ -111,16 +111,20 @@ class Footer {
 })
 class AppComponent {
     public state: app.AppState;
+    public items: app.TodoItem[];
     // TODO: This avoids re-instantiating TodoItems when they are updated.
     // However, the cursor position still gets reset to the end when
     // ever an update occurs ?!?
     public itemid(index: number, item: app.TodoItem) { return item.id; }
     constructor(@Inject('Actions') private actions: app.ActionProvider, ref: ChangeDetectorRef) {
         this.state = this.actions.store.getState();
+        this.items = app.memoFilter({route: this.state.route.name,
+                                    items: this.state.items});
         this.actions.store.subscribe(() => {
-            console.log("new state = ", this.state);
             this.state = this.actions.store.getState();
-            ref.markForCheck();
+            this.items = app.memoFilter({route: this.state.route.name,
+                                        items: this.state.items});
+            ref.detectChanges();
         })
     }
 }
