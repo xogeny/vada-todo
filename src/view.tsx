@@ -36,6 +36,7 @@ interface TodoProps extends app.TodoItem, React.Props<TodoItem> {
 interface TodoState {
     editing: boolean;
 }
+
 class TodoItem extends React.Component<TodoProps, TodoState> {
     constructor(props?: TodoProps) {
         super(props);
@@ -59,8 +60,7 @@ class TodoItem extends React.Component<TodoProps, TodoState> {
                 <label onDoubleClick={e => this.setState({editing: true})}>
                     {this.props.text}
                 </label>
-                <button className="destroy"
-                        onClick={e => actions.deleteItem(id)}>
+                <button className="destroy" onClick={e => actions.deleteItem(id)}>
                 </button>
             </div>
             <input className="edit" value={this.props.text}
@@ -95,9 +95,9 @@ class Footer extends React.Component<FooterProps, void> {
             </ul>
             {this.props.completed===0 ? null : 
              <button className="clear-completed"
-             onClick={e => this.props.actions.clearCompleted() }>
-                Clear completed
-            </button>}
+                     onClick={e => this.props.actions.clearCompleted() }>
+                 Clear completed
+             </button>}
         </footer>;
     }
 };

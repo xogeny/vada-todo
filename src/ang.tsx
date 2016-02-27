@@ -16,10 +16,12 @@ import app = require('./app');
          (keyup.enter)="actions.createNew(); value=''">
 </div>`,
 }) class Header implements OnInit {
-    value: string;
-    @Input() text: string;
     @Input() actions: app.ActionProvider;
+    @Input() text: string;
+    value: string; // Used with ngModel
     ngOnInit() {
+        // A bit of a kludge. This state is introduced because
+        // otherwise Angular2 resets the focus on the <input>
         this.value = this.text;
     }
 }
@@ -41,10 +43,10 @@ import app = require('./app');
 </li>
 `,
 }) class TodoItem implements OnInit {
-    public editing: boolean = false;
-    public text: string;
-    @Input() public item: app.TodoItem;
     @Input() public actions: app.ActionProvider;
+    @Input() public item: app.TodoItem;
+    public editing: boolean = false;
+    public text: string; // Same focus kludge as with Header
     ngOnInit() {
         this.text = this.item.text;
     }
@@ -74,10 +76,10 @@ import app = require('./app');
 `,
 })
 class Footer {
+    @Input() actions: app.ActionProvider;
     @Input() active: number;
     @Input() total: number;
     @Input() route: string;
-    @Input() actions: app.ActionProvider;
     public allRoute = app.allRoute;
     public activeRoute = app.activeRoute;
     public completedRoute = app.completedRoute;
@@ -90,7 +92,8 @@ class Footer {
 <div>
   <Header [text]="state.entry" [actions]="actions"></Header>
   <section class="main">
-    <input class="toggle-all" type="checkbox">
+    <input class="toggle-all" type="checkbox"
+           [checked]="state.active==0" (click)="actions.markAllAs(state.active>0)">
     <ul class="todo-list">
       <TodoItem *ngFor="#item of items; #i = index; trackBy: itemid"
                 [item]="item" [actions]="actions">
