@@ -50,15 +50,9 @@ class Header {
         if (text.trim()==="") return;
         if (e.which !== ENTER_KEY) {
             this.actions.editItem(this.item.id, text);
-            console.log("Change field to ", text);
-            console.log("editing = ", this.editing);
             return;
         }
-        console.log("Ending editing, e.which = ", e.which);
         this.editing = false;
-    }
-    constructor() {
-        console.log("Creating TodoItem");
     }
 }
 
@@ -71,11 +65,15 @@ class Header {
         <span>item<span *ngIf="active!=1">s</span> left</span>
     </span>
     <ul class="filters">
-        <li><a href="" class="cl(app.allRoute)">All</a></li>
-        <li><a href="" class="cl(app.activeRoute)">Active</a></li>
-        <li><a href="" class="cl(app.completedRoute)">Completed</a></li>
+        <li><a href="{{actions.all.href(null)}}"
+               [class.selected]="route==allRoute.id">All</a></li>
+        <li><a href="{{actions.active.href(null)}}"
+               [class.selected]="route==activeRoute.id">Active</a></li>
+        <li><a href="{{actions.completed.href(null)}}"
+               [class.selected]="route==completedRoute.id">Completed</a></li>
     </ul>
-    <button class="clear-completed" *ngIf="completed!=0">
+    <button class="clear-completed" *ngIf="active!=total"
+            (click)="actions.clearCompleted()">
        Clear completed
     </button>
 </footer>
@@ -83,8 +81,12 @@ class Header {
 })
 class Footer {
     @Input() active: number;
-    constructor(@Inject('Actions') private actions: app.ActionProvider) {
-    }
+    @Input() total: number;
+    @Input() route: string;
+    @Input() actions: app.ActionProvider;
+    public allRoute = app.allRoute;
+    public activeRoute = app.activeRoute;
+    public completedRoute = app.completedRoute;
 }
 
 @Component({
@@ -101,7 +103,8 @@ class Footer {
       </TodoItem>
     </ul>
   </section>
-  <Footer active="{{state.active}}">
+  <Footer [active]="state.active" [actions]="actions"
+          [total]="state.items.length" [route]="state.route.name">
   </Footer>
 </div>
 `
@@ -112,10 +115,10 @@ class AppComponent {
     // However, the cursor position still gets reset to the end when
     // ever an update occurs ?!?
     public itemid(index: number, item: app.TodoItem) { return item.id; }
-    constructor(@Inject('Actions') private actions: app.ActionProvider,
-                ref: ChangeDetectorRef) {
+    constructor(@Inject('Actions') private actions: app.ActionProvider, ref: ChangeDetectorRef) {
         this.state = this.actions.store.getState();
         this.actions.store.subscribe(() => {
+            console.log("new state = ", this.state);
             this.state = this.actions.store.getState();
             ref.markForCheck();
         })

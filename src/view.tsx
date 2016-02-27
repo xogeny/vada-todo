@@ -8,7 +8,6 @@ import { routingCallback, RouteId } from 'vada';
 import { ENTER_KEY, addSampleItems } from './utils';
 
 import { bindClass, classnames, ClassMap } from 'vada/lib/src/react';
-import { bindRoute, RouteRequest, initializeRouting } from 'vada/lib/src/browser';
 
 interface HeaderProps extends React.Props<Header> {
     actions: app.ActionProvider;
@@ -118,7 +117,7 @@ class App extends React.Component<AppProps, void> {
         let completed = this.props.state.items.length-this.props.state.active;
         let toggleDone = this.props.state.active===0;
         return <div>
-o                <Header text={this.props.state.entry} actions={actions}/>
+                <Header text={this.props.state.entry} actions={actions}/>
                 <section className="main">
                     <input className="toggle-all" type="checkbox"
                            onClick={e => actions.markAllAs(!toggleDone)}
