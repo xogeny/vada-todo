@@ -118,7 +118,7 @@ class App extends React.Component<AppProps, void> {
         let completed = this.props.state.items.length-this.props.state.active;
         let toggleDone = this.props.state.active===0;
         return <div>
-                <Header text={this.props.state.entry} actions={actions}/>
+o                <Header text={this.props.state.entry} actions={actions}/>
                 <section className="main">
                     <input className="toggle-all" type="checkbox"
                            onClick={e => actions.markAllAs(!toggleDone)}
