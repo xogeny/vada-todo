@@ -19,18 +19,40 @@ class Header {
 }
 
 @Component({
+    selector: "Footer",
+    template: `
+<footer class="footer">
+    <span class="todo-count">
+        <strong>{active}&nbsp;</strong>
+        <span>item<span *ngIf="this.props.active!=1">s</span> left</span>
+    </span>
+    <ul class="filters">
+        <li><a href="" class="cl(app.allRoute)">All</a></li>
+        <li><a href="" class="cl(app.activeRoute)">Active</a></li>
+        <li><a href="" class="cl(app.completedRoute)">Completed</a></li>
+    </ul>
+    <button class="clear-completed" *ngIf="completed!=0">
+       Clear completed
+    </button>
+</footer>
+`,
+})
+class Footer {
+    constructor(@Inject('Actions') private actions: app.ActionProvider) {
+    }
+}
+
+@Component({
     selector: "TodoItem",
     template: `
-<li class="completed">
+<li [class.completed]="item.completed">
   <div class="view">
-     <input class="toggle" type="checkbox">
-     <label>
-       {{item.text}}
-     </label>
+     <input class="toggle" type="checkbox" [value]="item.completed">
+     <label>{{item.text}}</label>
      <button class="destroy">
      </button>
   </div>
-  <input class="edit">
+  <input class="edit" [value]="item.text">
 </li>
 `,
 })
@@ -42,7 +64,7 @@ class TodoItem {
 */
 @Component({
     selector: 'todo-app',
-    directives: [Header, TodoItem],
+    directives: [Header, TodoItem, Footer],
     template: `
 <div>
   <Header></Header>
@@ -54,6 +76,8 @@ class TodoItem {
       </TodoItem>
     </ul>
   </section>
+  <Footer>
+  </Footer>
 </div>
 `
 })
