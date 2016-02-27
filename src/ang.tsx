@@ -1,7 +1,7 @@
-import { Component, provide, Inject, Input } from 'angular2/core';
+import { Component, provide, Inject, Input, ChangeDetectorRef } from 'angular2/core';
 import { bootstrap } from 'angular2/platform/browser';
 import { createStore } from 'redux';
-import { addSampleItems } from './utils';
+import { ENTER_KEY, addSampleItems } from './utils';
 
 import app = require('./app');
 
@@ -10,10 +10,22 @@ import app = require('./app');
     template: `
 <div>
   <h1>todos</h1>
-  <input class="new-todo" placeholder="What needs to be done?">
+  <input #todotext class="new-todo" placeholder="What needs to be done?"
+         [value]=text
+         (keyup)="handleKey($event, todotext.value)">
 </div>`,
 })
 class Header {
+    @Input() text: string
+    handleKey(e: KeyboardEvent, text: string) {
+        if (e.which !== ENTER_KEY) {
+            console.log("Setting new entry text")
+            this.actions.entryText(text)
+            return
+        }
+        if (text.trim()==="") return;
+        this.actions.createNew();
+    }
     constructor(@Inject('Actions') private actions: app.ActionProvider) {
     }
 }
@@ -23,8 +35,8 @@ class Header {
     template: `
 <footer class="footer">
     <span class="todo-count">
-        <strong>{active}&nbsp;</strong>
-        <span>item<span *ngIf="this.props.active!=1">s</span> left</span>
+        <strong>{{active}}&nbsp;</strong>
+        <span>item<span *ngIf="active!=1">s</span> left</span>
     </span>
     <ul class="filters">
         <li><a href="" class="cl(app.allRoute)">All</a></li>
@@ -38,6 +50,7 @@ class Header {
 `,
 })
 class Footer {
+    @Input() active: number;
     constructor(@Inject('Actions') private actions: app.ActionProvider) {
     }
 }
@@ -67,27 +80,28 @@ class TodoItem {
     directives: [Header, TodoItem, Footer],
     template: `
 <div>
-  <Header></Header>
+  <Header text="{{state.entry}}"></Header>
   <section class="main">
     <input class="toggle-all" type="checkbox">
     <ul class="todo-list">
-      <TodoItem [item]="item"
-                *ngFor="#item of actions.store.getState().items; #i = index">
+      <TodoItem [item]="item" *ngFor="#item of state.items; #i = index">
       </TodoItem>
     </ul>
   </section>
-  <Footer>
+  <Footer active="{{state.active}}">
   </Footer>
 </div>
 `
 })
 class AppComponent {
     public state: app.AppState;
-    constructor(@Inject('Actions') private actions: app.ActionProvider) {
+    constructor(@Inject('Actions') private actions: app.ActionProvider,
+                ref: ChangeDetectorRef) {
         this.state = this.actions.store.getState();
         this.actions.store.subscribe(() => {
             console.log("State updated")
             this.state = this.actions.store.getState();
+            ref.markForCheck();
         })
     }
 }

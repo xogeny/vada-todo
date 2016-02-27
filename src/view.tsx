@@ -5,7 +5,7 @@ import { createStore } from 'redux';
 
 import app = require('./app');
 import { routingCallback, RouteId } from 'vada';
-import { addSampleItems } from './utils';
+import { ENTER_KEY, addSampleItems } from './utils';
 
 import { bindClass, classnames, ClassMap } from 'vada/lib/src/react';
 import { bindRoute, RouteRequest, initializeRouting } from 'vada/lib/src/browser';
@@ -15,8 +15,6 @@ interface HeaderProps extends React.Props<Header> {
     text: string;
 };
 
-const ENTER_KEY = 13;
-    
 class Header extends React.Component<HeaderProps, void> {
     newItem(e: React.KeyboardEvent) {
         if (e.keyCode !== ENTER_KEY || this.props.text.trim()==="") return;
