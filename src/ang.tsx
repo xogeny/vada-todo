@@ -125,9 +125,6 @@ export function bootstrapAngular() {
     let actions = new app.ActionProvider(store);
     addSampleItems(store);
     
-    bootstrap(AppComponent, [
-        provide('Actions', {
-            useFactory: () => actions
-        }
-    )]);
+    bootstrap(AppComponent,
+              [provide('Actions', { useFactory: () => actions })]);
 }
