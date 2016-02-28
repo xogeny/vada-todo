@@ -15,6 +15,7 @@ interface HeaderProps extends React.Props<Header> {
 };
 
 class Header extends React.Component<HeaderProps, void> {
+    input: HTMLInputElement;
     newItem(e: React.KeyboardEvent) {
         if (e.keyCode !== ENTER_KEY || this.props.text.trim()==="") return;
         this.props.actions.createNew();
@@ -24,7 +25,8 @@ class Header extends React.Component<HeaderProps, void> {
             <h1>React</h1>
             <input className="new-todo" placeholder="What needs to be done?"
                    value={this.props.text} onKeyDown={e => this.newItem(e)}
-                   onChange={e => this.props.actions.entryText(e.target["value"]) }/>
+                   ref={(input) => this.input = input}
+                   onChange={e => this.props.actions.entryText(this.input.value) }/>
         </div>);
     };
 };
@@ -38,6 +40,7 @@ interface TodoState {
 }
 
 class TodoItem extends React.Component<TodoProps, TodoState> {
+    input: HTMLInputElement;
     constructor(props?: TodoProps) {
         super(props);
         this.state = { editing: false };
@@ -65,7 +68,8 @@ class TodoItem extends React.Component<TodoProps, TodoState> {
             </div>
             <input className="edit" value={this.props.text}
                    onKeyDown={e => this.endEditing(e)}
-                   onChange={e => actions.editItem(id, e["value"])}/>
+                   ref={(input) => this.input = input}                   
+                   onChange={e => actions.editItem(id, this.input.value)}/>
         </li>;
     };
 };

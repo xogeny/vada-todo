@@ -150,7 +150,6 @@ let r = new Builder<AppState>(
     .overlayOps((s, r, a) => { s.route = r(s.route, a) }, [setRoute])
     // Perform count
     .reactTo(countActive)
-    //.log("App Reducer")
 
 export const reducer: redux.Reducer<AppState> = r.reducer();
 

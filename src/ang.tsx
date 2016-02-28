@@ -18,13 +18,17 @@ import app = require('./app');
          [(ngModel)]=value (ngModelChange)="actions.entryText(todotext.value)"
          (keyup.enter)="actions.createNew(); value=''">
 </div>`,
-}) class Header implements OnInit {
+}) class Header implements OnInit, OnChanges {
     @Input() actions: app.ActionProvider;
     @Input() text: string;
     value: string; // Used with ngModel
+    constructor() {}
     ngOnInit() {
         // A bit of a kludge. This state is introduced because
         // otherwise Angular2 resets the focus on the <input>
+        this.value = this.text;
+    }
+    ngOnChanges() {
         this.value = this.text;
     }
 }
@@ -45,12 +49,15 @@ import app = require('./app');
          (keyup.enter)="editing=false">
 </li>
 `,
-}) class TodoItem implements OnInit {
+}) class TodoItem implements OnInit, OnChanges {
     @Input() public actions: app.ActionProvider;
     @Input() public item: app.TodoItem;
     public editing: boolean = false;
     public text: string; // Same focus kludge as with Header
     ngOnInit() {
+        this.text = this.item.text;
+    }
+    ngOnChanges() {
         this.text = this.item.text;
     }
 }
