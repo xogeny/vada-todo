@@ -5,8 +5,7 @@ import { createStore } from 'redux';
 import { ENTER_KEY, addSampleItems } from './utils';
 import * as r from './view';
 
-import React = require('react');
-import ReactDOM = require('react-dom');
+import { Footer2 } from './rang';
 
 import app = require('./app');
 
@@ -53,48 +52,6 @@ import app = require('./app');
     public text: string; // Same focus kludge as with Header
     ngOnInit() {
         this.text = this.item.text;
-    }
-}
-
-@View({
-    template: ''
-})
-abstract class RBase implements OnInit, OnChanges {
-    abstract render(): void;
-    ngOnInit() {
-        this.render()
-    }
-    ngOnChanges() {
-        this.render()
-    }
-}
-
-@Component({
-    selector: "Footer2",
-})
-@View({
-    template: ''
-}) class Footer2 implements OnInit, OnChanges {
-    @Input() actions: app.ActionProvider;
-    @Input() active: number;
-    @Input() total: number;
-    @Input() route: string;
-    public allRoute = app.allRoute;
-    public activeRoute = app.activeRoute;
-    public completedRoute = app.completedRoute;
-    constructor(protected elementRef: ElementRef) {
-        console.log("elementRef = ", elementRef);
-    }
-    render() {
-        ReactDOM.render(
-            <span>This is a JSX.Element</span>,
-            this.elementRef.nativeElement);
-    }
-    ngOnInit() {
-        this.render()
-    }
-    ngOnChanges() {
-        this.render()
     }
 }
 
@@ -145,10 +102,10 @@ abstract class RBase implements OnInit, OnChanges {
       </TodoItem>
     </ul>
   </section>
-  <Footer [active]="state.active" [actions]="actions"
+  <foo data="foo"></foo>
+  <Footer2 [active]="state.active" [actions]="actions"
           [total]="state.items.length" [route]="state.route.name">
-  </Footer>
-  <Footer2>Hello</Footer2>
+  </Footer2>
 </div>
 `
 })
