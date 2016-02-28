@@ -21,7 +21,7 @@ class Header extends React.Component<HeaderProps, void> {
     }
     render() {
         return (<div>
-            <h1>todos</h1>
+            <h1>React</h1>
             <input className="new-todo" placeholder="What needs to be done?"
                    value={this.props.text} onKeyDown={e => this.newItem(e)}
                    onChange={e => this.props.actions.entryText(e.target["value"]) }/>
@@ -102,12 +102,12 @@ class Footer extends React.Component<FooterProps, void> {
     }
 };
 
-interface AppProps extends React.Props<App> {
+export interface AppProps extends React.Props<App> {
     state: app.AppState;
     actions: app.ActionProvider;
 }
 
-class App extends React.Component<AppProps, void> {
+export class App extends React.Component<AppProps, void> {
     render() {
         let actions = this.props.actions;
         let items = app.memoFilter({route: this.props.state.route.name,

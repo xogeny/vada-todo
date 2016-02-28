@@ -13,7 +13,7 @@ import app = require('./app');
     selector: "Header",
     template: `
 <div>
-  <h1>todos</h1>
+  <h1>Angular2</h1>
   <input #todotext class="new-todo" placeholder="What needs to be done?"
          [(ngModel)]=value (ngModelChange)="actions.entryText(todotext.value)"
          (keyup.enter)="actions.createNew(); value=''">
@@ -109,7 +109,7 @@ import app = require('./app');
 </div>
 `
 })
-class AppComponent {
+export class AppComponent {
     public state: app.AppState;
     public items: app.TodoItem[];
     public itemid(index: number, item: app.TodoItem) { return item.id; }

@@ -16,3 +16,5 @@ import view = require('./view');
 export function mountReact(elem: Element) {
     view.render(elem)
 }
+
+export { run } from './entry';

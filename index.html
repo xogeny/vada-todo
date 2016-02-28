@@ -8,9 +8,11 @@
   </head>
   <body>
     <section class="todoapp">
-      <todo-app></todo-app>
       <div id="main">
       </div>
+    </section>
+    <section class="todoapp">
+      <todo-app></todo-app>
     </section>
     <footer class="info">
       <p>Double-click to edit a todo</p>
@@ -20,8 +22,7 @@
 
     <script src="dist/bundle.js"></script>
     <script>
-      VadaTodo.mountReact(document.getElementById("main"))
-      //VadaTodo.bootstrapAngular()
+      VadaTodo.run(true, true, document.getElementById("main"))
     </script>
   </body>
 </html>
