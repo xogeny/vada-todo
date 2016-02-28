@@ -25,8 +25,7 @@ export abstract class RBase implements OnInit, OnChanges {
 
 @Component({
     selector: "Footer2",
-}) @View({
-    template: ''
+    template: '',
 }) export class Footer2 extends RBase {
     @Input() actions: app.ActionProvider;
     @Input() active: number;
@@ -44,7 +43,7 @@ export abstract class RBase implements OnInit, OnChanges {
             <footer className="footer">
                 <span className="todo-count">
                     <strong>{this.active}&nbsp;</strong>
-                    <span>{this.active==1 ? "item" : "items"} left</span>
+                    <span>{this.active==1 ? "item" : "items"} remaining</span>
                 </span>
                 <ul className="filters">
                     <li><a href={this.actions.all.href(null)}
