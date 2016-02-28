@@ -2,18 +2,22 @@
 <html lang="en" data-framework="react">
   <head>
     <meta charset="utf-8">
-    <title>Vada/React • TodoMVC</title>
+    <title>Vada + Angular/React • TodoMVC</title>
     <link rel="stylesheet" href="node_modules/todomvc-common/base.css">
     <link rel="stylesheet" href="node_modules/todomvc-app-css/index.css">
   </head>
-  <body>
-    <section class="todoapp">
-      <div id="main">
-      </div>
-    </section>
-    <section class="todoapp">
-      <todo-app></todo-app>
-    </section>
+  <body style="max-width: 100%">
+    <div style="display: flex"> 
+      <section class="todoapp"
+               style="flex-grow: 1; margin-left: 20px; margin-right: 20px">
+        <div id="main">
+        </div>
+      </section>
+      <section class="todoapp"
+               style="flex-grow: 1; margin-left: 20px; margin-right: 20px">
+        <todo-app></todo-app>
+      </section>
+    </div>
     <footer class="info">
       <p>Double-click to edit a todo</p>
       <p>Created by <a href="http://github.com/xogeny/">xogeny</a></p>
