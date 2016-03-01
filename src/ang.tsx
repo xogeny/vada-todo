@@ -22,7 +22,6 @@ import app = require('./app');
     @Input() actions: app.ActionProvider;
     @Input() text: string;
     value: string; // Used with ngModel
-    constructor() {}
     ngOnInit() {
         // A bit of a kludge. This state is introduced because
         // otherwise Angular2 resets the focus on the <input>

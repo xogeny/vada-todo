@@ -76,8 +76,8 @@ class TodoItem extends React.Component<TodoProps, TodoState> {
 
 interface FooterProps extends React.Props<Footer> {
     actions: app.ActionProvider;
-    completed: number;
     active: number;
+    total: number;
     route: string;
 };
 
@@ -97,7 +97,7 @@ class Footer extends React.Component<FooterProps, void> {
                 <li><a href={this.props.actions.completed.href(null)}
                        className={cl(app.completedRoute)}>Completed</a></li>
             </ul>
-            {this.props.completed===0 ? null : 
+            {this.props.active==this.props.total ? null : 
              <button className="clear-completed"
                      onClick={e => this.props.actions.clearCompleted() }>
                  Clear completed
@@ -130,8 +130,8 @@ export class App extends React.Component<AppProps, void> {
                         {todos}
                     </ul>
                 </section>
-                <Footer active={this.props.state.active}
-                        completed={completed} actions={actions}
+                <Footer active={this.props.state.active} actions={actions}
+                        total={this.props.state.items.length}
                         route={this.props.state.route.name}/>
         </div>;
     }
