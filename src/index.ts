@@ -8,6 +8,6 @@ import 'reflect-metadata';
 import app = require('./app');
 
 // This is required to launch the React version
-import view = require('./view');
+import view = require('./react');
 
 export { run, bootstrapAngular, render } from './entry';

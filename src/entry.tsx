@@ -4,11 +4,11 @@ import { addSampleItems } from './utils';
 import { bootstrap } from 'angular2/platform/browser';
 import { provide } from 'angular2/core';
 
-import { AppComponent } from './ang';
+import { AppComponent } from './angular2';
 
 import { bindClass } from 'vada/lib/src/react';
 
-import { App } from './view';
+import { App } from './react';
 import React = require('react');
 import ReactDOM = require('react-dom');
 

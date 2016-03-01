@@ -3,9 +3,8 @@ import { Component, provide, Inject, Input, OnInit, OnChanges, ElementRef, View,
 import { bootstrap } from 'angular2/platform/browser';
 import { createStore } from 'redux';
 import { ENTER_KEY, addSampleItems } from './utils';
-import * as r from './view';
 
-import { Footer2 } from './rang';
+import { Footer2 } from './angjsx';
 
 import app = require('./app');
 
