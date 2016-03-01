@@ -7,14 +7,7 @@ import 'reflect-metadata';
 // This is the (viewless) business logic
 import app = require('./app');
 
-// These are required to launch the Angular2 version
-export { bootstrapAngular } from './ang';
-
 // This is required to launch the React version
 import view = require('./view');
 
-export function mountReact(elem: Element) {
-    view.render(elem)
-}
-
-export { run } from './entry';
+export { run, bootstrapAngular, render } from './entry';

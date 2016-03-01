@@ -109,9 +109,9 @@ import app = require('./app');
     </ul>
   </section>
   <foo data="foo"></foo>
-  <Footer2 [active]="state.active" [actions]="actions"
+  <Footer [active]="state.active" [actions]="actions"
           [total]="state.items.length" [route]="state.route.name">
-  </Footer2>
+  </Footer>
 </div>
 `
 })
@@ -130,13 +130,4 @@ export class AppComponent {
             ref.detectChanges();
         })
     }
-}
-
-export function bootstrapAngular() {
-    let store = createStore(app.reducer);
-    let actions = new app.ActionProvider(store);
-    addSampleItems(store);
-    
-    bootstrap(AppComponent,
-              [provide('Actions', { useFactory: () => actions })]);
 }

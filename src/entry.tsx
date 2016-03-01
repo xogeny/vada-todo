@@ -32,3 +32,27 @@ export function run(showReact: boolean, showAngular: boolean, elem: Element) {
                   [provide('Actions', { useFactory: () => actions })]);
     }
 }
+
+
+export function render(elem: Element) {
+    let store = createStore(app.reducer);
+    let actions = new app.ActionProvider(store);
+    addSampleItems(store);
+
+    let Root = bindClass(store, App, (s: app.AppState) => {
+        return {
+            state: s,
+            actions: actions,
+        };
+    });
+    ReactDOM.render(<Root/>, elem);
+}
+
+export function bootstrapAngular() {
+    let store = createStore(app.reducer);
+    let actions = new app.ActionProvider(store);
+    addSampleItems(store);
+    
+    bootstrap(AppComponent,
+              [provide('Actions', { useFactory: () => actions })]);
+}

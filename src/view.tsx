@@ -136,17 +136,3 @@ export class App extends React.Component<AppProps, void> {
         </div>;
     }
 }
-
-export function render(elem: Element) {
-    let store = createStore(app.reducer);
-    let actions = new app.ActionProvider(store);
-    addSampleItems(store);
-
-    let Root = bindClass(store, App, (s: app.AppState) => {
-        return {
-            state: s,
-            actions: actions,
-        };
-    });
-    ReactDOM.render(<Root/>, elem);
-}
